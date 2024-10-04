@@ -1,0 +1,15 @@
+# Step 1: Navigate to the working directory
+cd $Env:bamboo_working_directory
+
+# Step 2: Zip the checked-out source code
+Compress-Archive -Path * -DestinationPath source-code.zip
+
+# Step 3: Download the Veracode wrapper JAR file
+Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/23.4.11.2/vosp-api-wrappers-java-23.4.11.2.jar" -OutFile "veracode-wrapper.jar"
+
+# Step 4: Upload the zip file to Veracode
+$vid = "9c42b4bd8abf978e9dc1667451778c58"
+$vkey = "568e7bd345890259c3e869c8da3d42597b815e6a780c5d72ce76eaf3045a1736d80eb0ced53eb61956b3f0410546b2ac6e681829eaa3c9c621fcd722cee60b14"
+$app = "VeraDemo"
+$file = "source-code.zip"
+java -jar veracode-wrapper.jar -vid $vid -vkey $vkey -action uploadandscan -appname $app -createprofile false -version $(Get-Date -Format "HHmmssddMMyyyy") -filepath $file
